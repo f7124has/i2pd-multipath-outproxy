@@ -1,6 +1,8 @@
 # i2pd-multipath-outproxy
 Multipath socks5 outproxy for i2p network, for increase bandwidth, speed and stability
 
+![Demo](https://webm.red/view/9A6I.webm)
+
 # Начальные требования
 - VPS (для запуска outproxy)
 - Основной хост с которого вы будете выходить в интернет анонимно
