@@ -1,0 +1,30 @@
+services:
+    multipath:
+        image: mymultipath:latest
+        container_name: mymultipath
+        network_mode: host
+        restart: always
+        #  --tcp-link-filter none
+        command: /multipath/agg-tunnel --cfg /multipath/multipath.cfg server --tcp 1337 -p 1080 -n
+        ulimits:
+          nofile:
+            soft: 655350
+            hard: 655350
+        volumes:
+            - ./multipath.cfg:/multipath/multipath.cfg:ro
+
+    socks5:
+        image: 0990/socks5:latest
+        container_name: socks5
+        # logging:
+              # driver: none
+        ports:
+          - "127.0.0.1:1080:1080"
+        environment:
+          - PROXY_USER=
+          - PROXY_PASSWORD=
+        ulimits:
+          nofile:
+            soft: 655350
+            hard: 655350
+        restart: always

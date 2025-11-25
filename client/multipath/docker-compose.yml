@@ -1,0 +1,25 @@
+services:
+    multipath:
+        image: mymultipath:latest
+        container_name: mymultipath
+        network_mode: host
+        restart: always
+        command: /multipath/agg-tunnel --cfg /multipath/multipath.cfg client --tcp 127.0.0.1:3001 --tcp 127.0.0.1:3002 --tcp 127.0.0.1:3003 --tcp 127.0.0.1:3004 --tcp 127.0.0.1:3005 --tcp 127.0.0.1:3006 --tcp 127.0.0.1:3007 --tcp 127.0.0.1:3008 --tcp 127.0.0.1:3009 --tcp 127.0.0.1:3010 --tcp 127.0.0.1:3011 --tcp 127.0.0.1:3012 --tcp 127.0.0.1:3013 --tcp 127.0.0.1:3014 --tcp 127.0.0.1:3015 --tcp 127.0.0.1:3016 --tcp 127.0.0.1:3017 --tcp 127.0.0.1:3018 --tcp 127.0.0.1:3019 --tcp 127.0.0.1:3020 --tcp 127.0.0.1:3021 --tcp 127.0.0.1:3022 --tcp 127.0.0.1:3023 --tcp 127.0.0.1:3024 --tcp 127.0.0.1:3025 --tcp 127.0.0.1:3026 --tcp 127.0.0.1:3027 --tcp 127.0.0.1:3028 --tcp 127.0.0.1:3029 --tcp 127.0.0.1:3030 --tcp 127.0.0.1:3031 --tcp 127.0.0.1:3032 -p 1080 --tcp-link-filter none -4 -n
+        ulimits:
+          nofile:
+            soft: 655350
+            hard: 655350
+        volumes:
+            - ./multipath.cfg:/multipath/multipath.cfg:ro
+
+    haproxy:
+        image: haproxy:latest
+        container_name: haproxy
+        network_mode: host
+        restart: always
+        ulimits:
+          nofile:
+            soft: 655350
+            hard: 655350
+        volumes:
+            - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro

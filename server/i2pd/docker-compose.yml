@@ -1,0 +1,13 @@
+services:
+    i2pd:
+        image: myi2pd:latest
+        container_name: myi2pd
+        network_mode: host
+        restart: always
+        user: i2pd
+        ulimits:
+          nofile:
+            soft: 655350
+            hard: 655350
+        volumes:
+            - ./data:/home/i2pd/data:z

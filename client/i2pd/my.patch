@@ -1,0 +1,47 @@
+diff --git a/libi2pd/NetDbRequests.cpp b/libi2pd/NetDbRequests.cpp
+index 94633e1..199e6ec 100644
+--- a/libi2pd/NetDbRequests.cpp
++++ b/libi2pd/NetDbRequests.cpp
+@@ -518,7 +518,7 @@ namespace data
+ 		if (ecode != boost::asio::error::operation_aborted)
+ 		{
+ 			auto numRouters = netdb.GetNumRouters ();
+-			auto nextExploratoryInterval = numRouters < 2500 ? (EXPLORATORY_REQUEST_INTERVAL + m_Rng () % EXPLORATORY_REQUEST_INTERVAL)/2 :
++			auto nextExploratoryInterval = numRouters < 15000 ? (EXPLORATORY_REQUEST_INTERVAL + m_Rng () % EXPLORATORY_REQUEST_INTERVAL)/2 :
+ 				EXPLORATORY_REQUEST_INTERVAL + m_Rng () % EXPLORATORY_REQUEST_INTERVAL_VARIANCE;
+ 			if (numRouters)
+ 			{	
+diff --git a/libi2pd/Streaming.cpp b/libi2pd/Streaming.cpp
+index 25fb7b5..eb40425 100644
+--- a/libi2pd/Streaming.cpp
++++ b/libi2pd/Streaming.cpp
+@@ -771,7 +771,7 @@ namespace stream
+ 			m_WindowIncCounter = m_WindowIncCounter + incCounter;
+ 			//
+ 			// delay-based CC
+-			if ((m_SlowRTT > m_MinRTT + m_Jitter*6) && !m_IsWinDropped && !m_IsClientChoked) // Drop window if RTT grows too fast
++			if ((m_SlowRTT > m_MinRTT + m_Jitter*16) && !m_IsWinDropped && !m_IsClientChoked) // Drop window if RTT grows too fast
+ 			{
+ 				LogPrint (eLogDebug, "Streaming: Congestion detected, reduce window size");
+ 				ProcessWindowDrop ();
+diff --git a/libi2pd/Streaming.h b/libi2pd/Streaming.h
+index d3bd314..915d70f 100644
+--- a/libi2pd/Streaming.h
++++ b/libi2pd/Streaming.h
+@@ -59,12 +59,12 @@ namespace stream
+ #endif	
+ 	const size_t COMPRESSION_THRESHOLD_SIZE = 66;
+ 	const int MAX_NUM_RESEND_ATTEMPTS = 10;
+-	const int INITIAL_WINDOW_SIZE = 10;
++	const int INITIAL_WINDOW_SIZE = 512;
+ 	const int MIN_WINDOW_SIZE = 3;
+ 	const int MAX_WINDOW_SIZE = 512;
+-	const int MAX_WINDOW_SIZE_INC_PER_RTT = 12;
++	const int MAX_WINDOW_SIZE_INC_PER_RTT = 16;
+ 	const double RTT_EWMA_ALPHA = 0.1;
+-	const double SLOWRTT_EWMA_ALPHA = 0.02;
++	const double SLOWRTT_EWMA_ALPHA = 0.015;
+ 	const double PREV_SPEED_KEEP_TIME_COEFF = 0.2; // 0.1 - 1 // how long will the window size stay around the previous drop level, less is longer
+ 	const int MIN_RTO = 20; // in milliseconds
+ 	const int INITIAL_RTT = 1500; // in milliseconds
+
