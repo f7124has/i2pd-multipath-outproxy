@@ -7,7 +7,7 @@ Multipath socks5 outproxy for i2p network, for increase bandwidth, speed and sta
 
 # Минимальная пошаговая установка
 ## Настройка VPS
-- Зайдите на сервер и установите зависимости (`sudo apt insatll git docker docker-compose`)
+- Зайдите на сервер и установите зависимости (`sudo apt install git docker docker-compose`)
 - На VPS выполните `git clone https://github.com/f7124has/i2pd-multipath-outproxy.git`
 - VPS: `cd i2pd-multipath-outproxy/server/i2pd && ./scripts/build.sh && sudo chown -R 1000:1000 ./data && ./scripts/run.sh`
 - Узнайте ваш `.b32.i2p` адрес в сети `lynx http://127.0.0.1:7070/?page=i2p_tunnels`. Сохраните адрес вашего сервера, он понадобится вам позже для запуска клиента (будет выглядеть примерно вот так `tr26d3g4hviaqufmld6r16ikpdvjvd6g5qwdemnbuffck2fh663a.b32.i2p` и называтся `outproxy`)
