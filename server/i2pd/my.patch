@@ -19,7 +19,7 @@ index df831be..f739057 100644
  	const int NETDB_MAX_OFFLINE_EXPIRATION_TIMEOUT = 180; // in days
  	const int NETDB_EXPIRATION_TIMEOUT_THRESHOLD = 2*60; // 2 minutes
 diff --git a/libi2pd/Streaming.cpp b/libi2pd/Streaming.cpp
-index 25fb7b5..9b08866 100644
+index 25fb7b5..619281e 100644
 --- a/libi2pd/Streaming.cpp
 +++ b/libi2pd/Streaming.cpp
 @@ -763,7 +763,7 @@ namespace stream
@@ -27,7 +27,7 @@ index 25fb7b5..9b08866 100644
  				}
  			}
 -			if (m_IsBufferEmpty || m_FastRTT >= m_MinRTT + m_Jitter*3 || m_RTT >= m_MinRTT + m_Jitter*3 || m_SlowRTT >= m_MinRTT + m_Jitter*3 || m_RTT > m_FastRTT)
-+			if (m_IsBufferEmpty || m_FastRTT >= m_MinRTT + m_Jitter*3 || m_RTT >= m_MinRTT + m_Jitter*4 || m_SlowRTT >= m_MinRTT + m_Jitter*3 || m_RTT > m_FastRTT)
++			if (m_IsBufferEmpty || m_FastRTT >= m_MinRTT + m_Jitter*4 || m_RTT >= m_MinRTT + m_Jitter*4 || m_SlowRTT >= m_MinRTT + m_Jitter*4 || m_RTT > m_FastRTT)
  			{
  				incCounter = 0;
  				m_WindowIncCounter = 0;
