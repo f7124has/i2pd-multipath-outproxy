@@ -1,22 +1,8 @@
-diff --git a/libi2pd/NetDb.cpp b/libi2pd/NetDb.cpp
-index cab40e4..b65d960 100644
---- a/libi2pd/NetDb.cpp
-+++ b/libi2pd/NetDb.cpp
-@@ -649,8 +649,7 @@ namespace data
- 		// routers don't expire if less than 90 or uptime is less than 1 hour
- 		bool checkForExpiration = total > NETDB_MIN_ROUTERS && uptime > NETDB_CHECK_FOR_EXPIRATION_UPTIME; // 10 minutes
- 		if (checkForExpiration && uptime > i2p::transport::SSU2_TO_INTRODUCER_SESSION_DURATION) // 1 hour
--			expirationTimeout = i2p::context.IsFloodfill () ? NETDB_FLOODFILL_EXPIRATION_TIMEOUT*1000LL :
--				NETDB_MIN_EXPIRATION_TIMEOUT*1000LL + (NETDB_MAX_EXPIRATION_TIMEOUT - NETDB_MIN_EXPIRATION_TIMEOUT)*1000LL*NETDB_MIN_ROUTERS/total;
-+			expirationTimeout = NETDB_FLOODFILL_EXPIRATION_TIMEOUT*1000LL;
- 		bool isOffline = checkForExpiration && i2p::transport::transports.GetNumPeers () < NETDB_MIN_TRANSPORTS; // enough routers and uptime, but no transports
- 			
- 		std::list<std::pair<std::string, std::shared_ptr<RouterInfo::Buffer> > > saveToDisk;
 diff --git a/libi2pd/NetDb.hpp b/libi2pd/NetDb.hpp
-index df831be..72e682f 100644
+index df831be..f739057 100644
 --- a/libi2pd/NetDb.hpp
 +++ b/libi2pd/NetDb.hpp
-@@ -41,13 +41,13 @@ namespace data
+@@ -41,12 +41,12 @@ namespace data
  	const int NETDB_MIN_ROUTERS = 90;
  	const int NETDB_MIN_FLOODFILLS = 5;
  	const int NETDB_MIN_TRANSPORTS = 10 ; // otherwise assume offline
@@ -27,66 +13,47 @@ index df831be..72e682f 100644
  	const int NETDB_CHECK_FOR_EXPIRATION_UPTIME = 600; // 10 minutes, in seconds  
 -	const int NETDB_FLOODFILL_EXPIRATION_TIMEOUT = 60 * 60; // 1 hour, in seconds
 -	const int NETDB_MIN_EXPIRATION_TIMEOUT = 90 * 60; // 1.5 hours
--	const int NETDB_MAX_EXPIRATION_TIMEOUT = 27 * 60 * 60; // 27 hours
-+	const int NETDB_FLOODFILL_EXPIRATION_TIMEOUT = 12 * 60 * 60; // 12 hours
-+	const int NETDB_MIN_EXPIRATION_TIMEOUT = 12 * 60 * 60; // 1.5 hours
-+	const int NETDB_MAX_EXPIRATION_TIMEOUT = 48 * 60 * 60; // 27 hours
++	const int NETDB_FLOODFILL_EXPIRATION_TIMEOUT = 2 * 60 * 60; // 2 hours
++	const int NETDB_MIN_EXPIRATION_TIMEOUT = 2 * 60 * 60; // 2 hours
+ 	const int NETDB_MAX_EXPIRATION_TIMEOUT = 27 * 60 * 60; // 27 hours
  	const int NETDB_MAX_OFFLINE_EXPIRATION_TIMEOUT = 180; // in days
  	const int NETDB_EXPIRATION_TIMEOUT_THRESHOLD = 2*60; // 2 minutes
- 	const int NETDB_MIN_HIGHBANDWIDTH_VERSION = MAKE_VERSION_NUMBER(0, 9, 58); // 0.9.58
-diff --git a/libi2pd/NetDbRequests.cpp b/libi2pd/NetDbRequests.cpp
-index 94633e1..f99e79c 100644
---- a/libi2pd/NetDbRequests.cpp
-+++ b/libi2pd/NetDbRequests.cpp
-@@ -422,7 +422,7 @@ namespace data
- 	void NetDbRequests::RequestRouter (const IdentHash& router)
- 	{		
- 		auto r = netdb.FindRouter (router);
--		if (!r || i2p::util::GetMillisecondsSinceEpoch () > r->GetTimestamp () + 3600*1000LL)
-+		if (!r || i2p::util::GetMillisecondsSinceEpoch () > r->GetTimestamp () + 3600*12*1000LL)
- 		{
- 			// router with ident not found or too old (1 hour)
- 			LogPrint (eLogDebug, "NetDbReq: Found new/outdated router. Requesting RouterInfo...");
-@@ -518,7 +518,7 @@ namespace data
- 		if (ecode != boost::asio::error::operation_aborted)
- 		{
- 			auto numRouters = netdb.GetNumRouters ();
--			auto nextExploratoryInterval = numRouters < 2500 ? (EXPLORATORY_REQUEST_INTERVAL + m_Rng () % EXPLORATORY_REQUEST_INTERVAL)/2 :
-+			auto nextExploratoryInterval = numRouters < 15000 ? (EXPLORATORY_REQUEST_INTERVAL + m_Rng () % EXPLORATORY_REQUEST_INTERVAL)/2 :
- 				EXPLORATORY_REQUEST_INTERVAL + m_Rng () % EXPLORATORY_REQUEST_INTERVAL_VARIANCE;
- 			if (numRouters)
- 			{	
 diff --git a/libi2pd/Streaming.cpp b/libi2pd/Streaming.cpp
-index 25fb7b5..eb40425 100644
+index 25fb7b5..9b08866 100644
 --- a/libi2pd/Streaming.cpp
 +++ b/libi2pd/Streaming.cpp
+@@ -763,7 +763,7 @@ namespace stream
+ 					m_SlowRTT = m_MinRTT + m_Jitter;
+ 				}
+ 			}
+-			if (m_IsBufferEmpty || m_FastRTT >= m_MinRTT + m_Jitter*3 || m_RTT >= m_MinRTT + m_Jitter*3 || m_SlowRTT >= m_MinRTT + m_Jitter*3 || m_RTT > m_FastRTT)
++			if (m_IsBufferEmpty || m_FastRTT >= m_MinRTT + m_Jitter*3 || m_RTT >= m_MinRTT + m_Jitter*4 || m_SlowRTT >= m_MinRTT + m_Jitter*3 || m_RTT > m_FastRTT)
+ 			{
+ 				incCounter = 0;
+ 				m_WindowIncCounter = 0;
 @@ -771,7 +771,7 @@ namespace stream
  			m_WindowIncCounter = m_WindowIncCounter + incCounter;
  			//
  			// delay-based CC
 -			if ((m_SlowRTT > m_MinRTT + m_Jitter*6) && !m_IsWinDropped && !m_IsClientChoked) // Drop window if RTT grows too fast
-+			if ((m_SlowRTT > m_MinRTT + m_Jitter*16) && !m_IsWinDropped && !m_IsClientChoked) // Drop window if RTT grows too fast
++			if ((m_SlowRTT > m_MinRTT + m_Jitter*8) && !m_IsWinDropped && !m_IsClientChoked) // Drop window if RTT grows too fast
  			{
  				LogPrint (eLogDebug, "Streaming: Congestion detected, reduce window size");
  				ProcessWindowDrop ();
 diff --git a/libi2pd/Streaming.h b/libi2pd/Streaming.h
-index d3bd314..915d70f 100644
+index d3bd314..02ac05e 100644
 --- a/libi2pd/Streaming.h
 +++ b/libi2pd/Streaming.h
-@@ -59,12 +59,12 @@ namespace stream
+@@ -59,10 +59,10 @@ namespace stream
  #endif	
  	const size_t COMPRESSION_THRESHOLD_SIZE = 66;
  	const int MAX_NUM_RESEND_ATTEMPTS = 10;
 -	const int INITIAL_WINDOW_SIZE = 10;
-+	const int INITIAL_WINDOW_SIZE = 512;
++	const int INITIAL_WINDOW_SIZE = 16;
  	const int MIN_WINDOW_SIZE = 3;
  	const int MAX_WINDOW_SIZE = 512;
 -	const int MAX_WINDOW_SIZE_INC_PER_RTT = 12;
-+	const int MAX_WINDOW_SIZE_INC_PER_RTT = 16;
++	const int MAX_WINDOW_SIZE_INC_PER_RTT = 512;
  	const double RTT_EWMA_ALPHA = 0.1;
--	const double SLOWRTT_EWMA_ALPHA = 0.02;
-+	const double SLOWRTT_EWMA_ALPHA = 0.015;
+ 	const double SLOWRTT_EWMA_ALPHA = 0.02;
  	const double PREV_SPEED_KEEP_TIME_COEFF = 0.2; // 0.1 - 1 // how long will the window size stay around the previous drop level, less is longer
- 	const int MIN_RTO = 20; // in milliseconds
- 	const int INITIAL_RTT = 1500; // in milliseconds
-
