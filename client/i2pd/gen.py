@@ -13,7 +13,8 @@ outbound.length=3
 i2p.streaming.initialAckDelay=0
 gzip=true
 i2p.streaming.profile=2
-i2p.streaming.maxWindowSize=512
+i2p.streaming.maxWindowSize=768
+crypto.ratchet.inboundTags=1800
 """.format(index, 3000+index, index)
 
 import random
