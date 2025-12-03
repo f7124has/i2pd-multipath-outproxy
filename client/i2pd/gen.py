@@ -10,11 +10,11 @@ inbound.quantity=3
 outbound.quantity=3
 inbound.length=3
 outbound.length=3
-i2p.streaming.initialAckDelay=0
+i2p.streaming.initialAckDelay=200
 gzip=true
 i2p.streaming.profile=2
 i2p.streaming.maxWindowSize=768
-crypto.ratchet.inboundTags=1800
+crypto.ratchet.inboundTags=1600
 """.format(index, 3000+index, index)
 
 import random
