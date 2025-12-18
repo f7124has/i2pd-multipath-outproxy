@@ -6,8 +6,8 @@ port={1}
 destination=[CENSORED].b32.i2p
 destinationport=1337
 keys=transient-o{0}.dat
-inbound.quantity=3
-outbound.quantity=3
+inbound.quantity=4
+outbound.quantity=4
 inbound.length=4
 outbound.length=4
 inbound.lengthVariance=-1
@@ -16,7 +16,7 @@ i2p.streaming.initialAckDelay=200
 gzip=true
 i2p.streaming.profile=2
 i2p.streaming.maxWindowSize=768
-crypto.ratchet.inboundTags=1600
+crypto.ratchet.inboundTags=2400
 """.format(index, 3000+index, index)
 
 import random
