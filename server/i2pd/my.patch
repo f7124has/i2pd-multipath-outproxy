@@ -1,27 +1,5 @@
-diff --git a/libi2pd/NetDb.hpp b/libi2pd/NetDb.hpp
-index df831be..7795881 100644
---- a/libi2pd/NetDb.hpp
-+++ b/libi2pd/NetDb.hpp
-@@ -41,13 +41,13 @@ namespace data
- 	const int NETDB_MIN_ROUTERS = 90;
- 	const int NETDB_MIN_FLOODFILLS = 5;
- 	const int NETDB_MIN_TRANSPORTS = 10 ; // otherwise assume offline
--	const int NETDB_NUM_FLOODFILLS_THRESHOLD = 1800;
-+	const int NETDB_NUM_FLOODFILLS_THRESHOLD = 1800*4;
- 	const int NETDB_NUM_ROUTERS_THRESHOLD = 4*NETDB_NUM_FLOODFILLS_THRESHOLD;
- 	const int NETDB_TUNNEL_CREATION_RATE_THRESHOLD = 10; // in %
- 	const int NETDB_CHECK_FOR_EXPIRATION_UPTIME = 600; // 10 minutes, in seconds  
--	const int NETDB_FLOODFILL_EXPIRATION_TIMEOUT = 60 * 60; // 1 hour, in seconds
--	const int NETDB_MIN_EXPIRATION_TIMEOUT = 90 * 60; // 1.5 hours
--	const int NETDB_MAX_EXPIRATION_TIMEOUT = 27 * 60 * 60; // 27 hours
-+	const int NETDB_FLOODFILL_EXPIRATION_TIMEOUT = 12 * 60 * 60; // 12 hours
-+	const int NETDB_MIN_EXPIRATION_TIMEOUT = 12 * 60 * 60; // 12 hours
-+	const int NETDB_MAX_EXPIRATION_TIMEOUT = 72 * 60 * 60; // 72 hours
- 	const int NETDB_MAX_OFFLINE_EXPIRATION_TIMEOUT = 180; // in days
- 	const int NETDB_EXPIRATION_TIMEOUT_THRESHOLD = 2*60; // 2 minutes
- 	const int NETDB_MIN_HIGHBANDWIDTH_VERSION = MAKE_VERSION_NUMBER(0, 9, 58); // 0.9.58
 diff --git a/libi2pd/Streaming.cpp b/libi2pd/Streaming.cpp
-index 25fb7b5..356e0e9 100644
+index 25fb7b5..2a0ead3 100644
 --- a/libi2pd/Streaming.cpp
 +++ b/libi2pd/Streaming.cpp
 @@ -763,7 +763,7 @@ namespace stream
@@ -42,17 +20,8 @@ index 25fb7b5..356e0e9 100644
  			{
  				LogPrint (eLogDebug, "Streaming: Congestion detected, reduce window size");
  				ProcessWindowDrop ();
-@@ -1410,7 +1410,7 @@ namespace stream
- 				return;
- 			}	
- 		}	
--		if (!m_CurrentOutboundTunnel && m_RoutingSession) // first message to send
-+		if (false) // first message to send
- 		{
- 			// try to get shared path first
- 			auto routingPath = m_RoutingSession->GetSharedRoutingPath ();
 diff --git a/libi2pd/Streaming.h b/libi2pd/Streaming.h
-index d3bd314..0f3aa9c 100644
+index d3bd314..8a84e06 100644
 --- a/libi2pd/Streaming.h
 +++ b/libi2pd/Streaming.h
 @@ -59,10 +59,10 @@ namespace stream
@@ -61,12 +30,11 @@ index d3bd314..0f3aa9c 100644
  	const int MAX_NUM_RESEND_ATTEMPTS = 10;
 -	const int INITIAL_WINDOW_SIZE = 10;
 -	const int MIN_WINDOW_SIZE = 3;
--	const int MAX_WINDOW_SIZE = 512;
--	const int MAX_WINDOW_SIZE_INC_PER_RTT = 12;
 +	const int INITIAL_WINDOW_SIZE = 16;
 +	const int MIN_WINDOW_SIZE = 5;
-+	const int MAX_WINDOW_SIZE = 768;
-+	const int MAX_WINDOW_SIZE_INC_PER_RTT = 768;
+ 	const int MAX_WINDOW_SIZE = 512;
+-	const int MAX_WINDOW_SIZE_INC_PER_RTT = 12;
++	const int MAX_WINDOW_SIZE_INC_PER_RTT = 512;
  	const double RTT_EWMA_ALPHA = 0.1;
  	const double SLOWRTT_EWMA_ALPHA = 0.02;
  	const double PREV_SPEED_KEEP_TIME_COEFF = 0.2; // 0.1 - 1 // how long will the window size stay around the previous drop level, less is longer
