@@ -13,18 +13,29 @@ services:
         volumes:
             - ./multipath.cfg:/multipath/multipath.cfg:ro
 
-    socks5:
-        image: 0990/socks5:latest
-        container_name: socks5
-        # logging:
-              # driver: none
-        ports:
-          - "127.0.0.1:1080:1080"
-        environment:
-          - PROXY_USER=
-          - PROXY_PASSWORD=
-        ulimits:
-          nofile:
-            soft: 655350
-            hard: 655350
-        restart: always
+    # socks5:
+    #     image: 0990/socks5:latest
+    #     container_name: socks5
+    #     # logging:
+    #           # driver: none
+    #     ports:
+    #       - "127.0.0.1:1080:1080"
+    #     environment:
+    #       - PROXY_USER=
+    #       - PROXY_PASSWORD=
+    #     ulimits:
+    #       nofile:
+    #         soft: 655350
+    #         hard: 655350
+    #     restart: always
+
+    sing-box:
+        image: gzxhwq/sing-box:server
+        restart: unless-stopped
+        network_mode: host
+        volumes:
+          - ./sing-box-config.json:/etc/sing-box/config.json
+        cap_add:
+          - NET_ADMIN
+        devices:
+          - /dev/net/tun

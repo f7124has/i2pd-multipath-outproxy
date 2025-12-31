@@ -1,0 +1,70 @@
+{
+  "experimental": {
+  	"cache_file": {
+  	  "enabled": true,
+  	  "path": "cache.db",
+  	  "store_fakeip": true,
+  	  "store_rdrc": true,
+  	  "rdrc_timeout": "6h"
+  	}
+  },
+  "log": {
+    "level": "info",
+    "timestamp": true
+  },
+  "dns": {
+	"servers": [
+      {
+        "tag": "quad",
+        "address": "udp://9.9.9.9",
+        "detour": "proxy"
+      },
+      {
+        "tag": "google-doh",
+        "address": "https://dns.google/dns-query",
+        "detour": "proxy"
+      }
+    ],
+    "strategy": "ipv4_only",
+    "final": "quad"
+  },
+  "inbounds": [
+    {
+      "type": "tun",
+      "tag": "tun-in",
+      "interface_name": "tun0",
+      "address": "198.18.0.1/16",
+      "mtu": 65535,
+      "auto_route": true,
+      "strict_route": true,
+      "stack": "system",
+      "sniff": true,
+      "sniff_override_destination": false
+    }
+  ],
+  "outbounds": [
+    {
+      "type": "socks",
+      "tag": "proxy",
+      "server": "192.168.100.207",
+      "server_port": 1081,
+      "version": "5",
+      "tcp_fast_open": true,
+      "udp_over_tcp": { "enabled": true, "version": 2 }
+    },
+    {
+      "type": "direct",
+      "tag": "direct-out"
+    }
+  ],
+  "route": {
+    "rules": [
+      {
+        "protocol": "dns",
+        "action": "hijack-dns"
+      }
+    ],
+    "final": "proxy",
+	"auto_detect_interface": true
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "inbounds": [
+    {
+      "type": "socks",
+      "tag": "socks-in",
+      "listen": "127.0.0.1",
+      "listen_port": 1081,
+      "tcp_fast_open": true
+    }
+  ],
+  "outbounds": [
+    { "type": "direct", "tag": "direct-out" }
+  ]
+}
