@@ -6,8 +6,8 @@ port={1}
 destination=[CENSORED].b32.i2p
 destinationport=1337
 keys=o{0}.dat # transient-
-inbound.quantity=3
-outbound.quantity=3
+inbound.quantity=5
+outbound.quantity=5
 inbound.length=4
 outbound.length=4
 inbound.lengthVariance=-1
@@ -21,5 +21,5 @@ crypto.ratchet.inboundTags=3200
 """.format(index, 3000+index, index)
 
 import random
-for i in range(1, 33):
+for i in range(1, 25):
     print(gen(i))
