@@ -30,10 +30,18 @@ Demo video: https://webm.red/view/9A6I.webm
 - Proxy `socks5` should be started on `0.0.0.0:1081` (haproxy) and `127.0.0.1:1080` (aggligator)
 - `curl --socks5-hostname 127.0.0.1:1080 1.1.1.1 -v` Try to use it!
 
+## Bonus
+You can use this solution like a whonix. Both TCP/UDP supported.
+1. Create a virtual network interface between 2 VMs.
+2. Setup all software in [router-vm] and start it
+3. Put `client/multipath/sing-box-config.json` into [app-vm]
+4. Change socks5 proxy host here `client/multipath/sing-box-config.json`
+5. You can route all system network traffic throuth outproxy `./sing-box run -c client/multipath/sing-box-config.json`
+
 ## How it works
 A typical outproxy is limited by the throughput of a single tunnel used for data transfer. As a user, you have no influence on the tunnel's throughput because it is built through other nodes in the network, which you have no control over. Consequently, your connection speed is almost always random and often slow.
 
-Aggligator (https://github.com/surban/aggligator) allows you to split your single TCP connection into multiple ones, essentially allowing you to use multiple tunnels for a single outproxy. Their speeds will be combined. The default implementation in this repository uses 32 tunnels for data transfer, which can potentially increase download speeds several times over.
+Aggligator (https://github.com/surban/aggligator) allows you to split your single TCP connection into multiple ones, essentially allowing you to use multiple tunnels for a single outproxy. Their speeds will be combined. The default implementation in this repository uses 24 tunnels for data transfer, which can potentially increase download speeds several times over.
 
 You can easily surf the internet and use popular apps like YouTube while remaining anonymous.
 
